@@ -20,4 +20,4 @@ If time limits allow:
 - Interface with Google calendar API to check calendar and add reminders using due: key
 - Moving competed tasks to done.txt file
 - Graphical resolution of conflicts between external file changes and intenal DB
-- Pasiūlymai (hints) užduoties įvedimo lauke
+- Hints for task entry field
