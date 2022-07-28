@@ -1,20 +1,21 @@
-#Main app window
+# Main app window
 from tkinter import *
 from threading import *
 import time
 
-
 root = Tk()
-#window geometry definitions
+# window geometry definitions
 root.title('todo.txt interpreter')
 top_frame = Frame(root)
 filters_frame = Frame(root)
 tasks_frame = Frame(root)
 status_frame = Frame(root)
 
+
 def loading():
     thread1 = Thread(target=load)
     thread1.start()
+
 
 def load():
     print("thread1 loading")
@@ -22,9 +23,11 @@ def load():
     time.sleep(1)
     status_label["text"] = "Idle"
 
+
 def saving():
     thread2 = Thread(target=save)
     thread2.start()
+
 
 def save():
     print("thread2 saving")
@@ -32,8 +35,11 @@ def save():
     time.sleep(1)
     status_label["text"] = "Idle"
 
-load_button = Button(top_frame, text="Load", command=loading).pack(side=LEFT)
-save_button = Button(top_frame, text="Save", command=saving).pack(side=LEFT)
+
+load_button = Button(top_frame, text="Load", command=loading)
+load_button.pack(side=LEFT)
+save_button = Button(top_frame, text="Save", command=saving)
+save_button.pack(side=LEFT)
 
 context_listbox = Listbox(filters_frame)
 context_listbox.insert(END, "@test_context")
@@ -51,7 +57,7 @@ status_label = Label(status_frame, text="Idle", bd=1, relief=SUNKEN, anchor=W)
 status_label.pack(side=BOTTOM, fill=X)
 
 top_frame.pack(side=TOP, fill=X)
-status_frame.pack(side=BOTTOM, fill=X) #must be before others!
+status_frame.pack(side=BOTTOM, fill=X)  # must be before others!
 filters_frame.pack(side=LEFT, fill=Y)
 tasks_frame.pack(side=RIGHT, fill=BOTH)
 
