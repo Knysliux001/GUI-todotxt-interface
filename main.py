@@ -2,6 +2,19 @@
 from tkinter import *
 from threading import *
 import time
+import logging
+from DBInitializer import *
+from FileParser import FileParser
+
+
+
+logging.basicConfig(filename='guiapp.log', level=logging.DEBUG)
+
+Base.metadata.create_all(engine)
+
+parser = FileParser("test.txt")
+parser.read_input_file()
+
 
 root = Tk()
 # window geometry definitions
@@ -18,7 +31,7 @@ def loading():
 
 
 def load():
-    print("thread1 loading")
+    logging.debug("thread1 loading")
     status_label["text"] = "thread1 is loading..."
     time.sleep(1)
     status_label["text"] = "Idle"
@@ -30,7 +43,7 @@ def saving():
 
 
 def save():
-    print("thread2 saving")
+    logging.debug("thread2 saving")
     status_label["text"] = "thread2 is saving..."
     time.sleep(1)
     status_label["text"] = "Idle"
@@ -62,3 +75,4 @@ filters_frame.pack(side=LEFT, fill=Y)
 tasks_frame.pack(side=RIGHT, fill=BOTH)
 
 root.mainloop()
+
