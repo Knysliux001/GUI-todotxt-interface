@@ -1,3 +1,28 @@
+'''
+__line start__
+done?
+'^x '
+
+done with dates? (as per file format specification cannot be a single date)
+'^x (?P<completion_date>\d{4}-\d{2}-\d{2}) (?P<creation_date>\d{4}-\d{2}-\d{2}) '
+
+priority?
+'^\((?P<priority>[A-Z])\) '
+
+priority and creation_date
+'^\((?P<priority>[A-Z])\) (?P<creation_date>\d{4}-\d{2}-\d{2}) '
+
+
+__anywhere__
+contexts?
+' (?P<context>@.*?) '
+
+projects?
+' (?P<project>\+.*?) '
+
+due date?
+' due:(?P<due_date>\d{4}-\d{2}-\d{2}) '
+'''
 import re
 import logging
 from sqlalchemy.orm import sessionmaker
