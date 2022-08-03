@@ -9,9 +9,11 @@ done with dates? (as per file format specification cannot be a single date)
 priority?
 '^\((?P<priority>[A-Z])\) '
 
-priority and creation_date
+priority and creation_date?
 '^\((?P<priority>[A-Z])\) (?P<creation_date>\d{4}-\d{2}-\d{2}) '
 
+no priority, creation_date?
+'^(?P<creation_date>^\d{4}-\d{2}-\d{2}) '
 
 __anywhere__
 contexts?
@@ -58,7 +60,18 @@ class FileParser():
         else:
             description = line
             done = self.find_done(line)
-            self.create_task(description, done)
+            print(f'{done=} {description=}')
+            if done:
+                self.find_done_dates(line)
+            else:
+                priority = self.find_priority(line)
+                self.find_creation_date(line, priority)
+                self.find_contexts(line)
+                self.find_projects(line)
+                self.find_due_date(line)
+
+
+            # self.create_task(description, done)
 
     def create_task(self, description, done):
         task = Task(description=description, done=done)
@@ -74,6 +87,25 @@ class FileParser():
         else:
             logging.debug(f'Done set to False on {line}')
             return False
+
+    def find_done_dates(self, line):
+        pass
+
+    def find_priority(self, line):
+        pass
+
+    def find_creation_date(self, line, priority):
+        pass
+
+    def find_contexts(self, line):
+        pass
+
+    def find_projects(self, line):
+        pass
+
+    def find_due_date(self, line):
+        pass
+
 
 # testing lines:
 parser = FileParser("test.txt")
