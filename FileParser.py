@@ -66,9 +66,9 @@ class FileParser():
             else:
                 priority = self.find_priority(line)
                 self.find_creation_date(line, priority)
-                self.find_contexts(line)
-                self.find_projects(line)
-                self.find_due_date(line)
+            self.find_contexts(line)
+            self.find_projects(line)
+            self.find_due_date(line)
 
 
             # self.create_task(description, done)
