@@ -29,7 +29,7 @@ import re
 import logging
 import sys
 from sqlalchemy.orm import sessionmaker
-from DBInitializer import *
+from db_initializer import *
 # from datetime import date
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)

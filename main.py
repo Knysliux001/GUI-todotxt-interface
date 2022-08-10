@@ -4,8 +4,8 @@ from threading import *
 import time
 import logging
 import sys
-from DBInitializer import *
-from FileParser import FileParser
+from db_initializer import *
+from file_parser import FileParser
 
 
 
