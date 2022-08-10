@@ -17,18 +17,22 @@ no priority, creation_date?
 
 __anywhere__
 contexts?
-' (?P<context>@.*?) '
+'(?P<context>@\S*)'
 
 projects?
-' (?P<project>\+.*?) '
+'(?P<project>\+\S*)'
 
 due date?
-' due:(?P<due_date>\d{4}-\d{2}-\d{2}) '
+'due:(?P<due_date>\d{4}-\d{2}-\d{2})'
 '''
 import re
 import logging
+import sys
 from sqlalchemy.orm import sessionmaker
 from DBInitializer import *
+# from datetime import date
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -53,25 +57,26 @@ class FileParser():
 
 
     def parse_line(self, line, line_number=0):
-        logging.debug(f'Parsing {line_number}')
+        logging.debug(f'Parsing {line_number=}')
         if len(line.strip()) == 0:
             logging.warning(f'Empty line skipped on {self.file_name}:{line_number}')
             pass  # ignore empty lines
         else:
             description = line
             done = self.find_done(line)
-            print(f'{done=} {description=}')
+            logging.debug(f'{done=} {description=}')
             if done:
-                self.find_done_dates(line)
+                creation_date, completion_date = self.find_done_dates(line)
+                logging.debug(f'{creation_date=} {completion_date=} {description=}')
             else:
                 priority = self.find_priority(line)
-                self.find_creation_date(line, priority)
+                if priority:
+                    self.find_priority_creation_date(line)
+                else:
+                    self.find_creation_date(line)
             self.find_contexts(line)
             self.find_projects(line)
             self.find_due_date(line)
-
-
-            # self.create_task(description, done)
 
     def create_task(self, description, done):
         task = Task(description=description, done=done)
@@ -89,22 +94,75 @@ class FileParser():
             return False
 
     def find_done_dates(self, line):
-        pass
+        done_dates_re = re.compile(r'^x (?P<completion_date>\d{4}-\d{2}-\d{2}) (?P<creation_date>\d{4}-\d{2}-\d{2}) ')
+        result = done_dates_re.search(line)
+        if result:
+            creation_date = (result.group('creation_date'))
+            completion_date = (result.group('completion_date'))
+            logging.debug(f'Done dates set to {creation_date=} {completion_date=}')
+            return creation_date, completion_date
+        else:
+            return None, None
+
 
     def find_priority(self, line):
-        pass
+        priority_re = re.compile(r'^\((?P<priority>[A-Z])\) ')
+        result = priority_re.search(line)
+        if result:
+            priority = result.group('priority')
+            logging.debug(f'Priority set to {priority=} on {line}')
+            return priority
+        else:
+            logging.debug(f'No priority on {line}')
+            return None
 
-    def find_creation_date(self, line, priority):
-        pass
+    def find_priority_creation_date(self, line):
+        priority_date_re = re.compile(r'^\((?P<priority>[A-Z])\) (?P<creation_date>\d{4}-\d{2}-\d{2}) ')
+        result = priority_date_re.search(line)
+        if result:
+            creation_date = result.group('creation_date')
+            logging.debug(f'Creation date set to {creation_date=} on {line}')
+            return creation_date
+        else:
+            return None
+
+    def find_creation_date(self, line):
+        creation_date_re = re.compile(r'^(?P<creation_date>^\d{4}-\d{2}-\d{2}) ')
+        result = creation_date_re.search(line)
+        if result:
+            creation_date = result.group('creation_date')
+            logging.debug(f'Creation date set to {creation_date=} on {line}')
+            return creation_date
+        else:
+            return None
 
     def find_contexts(self, line):
-        pass
+        contexts_re = re.compile(r'(?P<context>@\S*)')
+        results = contexts_re.findall(line)
+        if results:
+            logging.debug(f'Found {results} contexts in {line}')
+            return results
+        else:
+            return None
 
     def find_projects(self, line):
-        pass
+        projects_re = re.compile(r'(?P<project>\+\S*)')
+        results = projects_re.findall(line)
+        if results:
+            logging.debug(f'Fount {results} projects in {line}')
+            return results
+        else:
+            return None
 
     def find_due_date(self, line):
-        pass
+        due_date_re = re.compile(r'due:(?P<due_date>\d{4}-\d{2}-\d{2})')
+        result = due_date_re.search(line)
+        if result:
+            due_date = result.group('due_date')
+            logging.debug(f'Due date set to {due_date=} on {line}')
+            return due_date
+        else:
+            return None
 
 
 # testing lines:

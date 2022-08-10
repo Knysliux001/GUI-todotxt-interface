@@ -3,12 +3,14 @@ from tkinter import *
 from threading import *
 import time
 import logging
+import sys
 from DBInitializer import *
 from FileParser import FileParser
 
 
 
-logging.basicConfig(filename='guiapp.log', level=logging.DEBUG)
+# logging.basicConfig(filename='guiapp.log', level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 Base.metadata.create_all(engine)
 
