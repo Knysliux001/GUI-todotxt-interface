@@ -31,9 +31,23 @@ class Task(Base):
     priority = Column("Priority", String(1), nullable=True, default=None)
     # hidden = Column("Hidden", Boolean, nullable=False, default=None)
     contexts = relationship("Context", secondary=task_context)
+    projects = relationship("Project", secondary=task_project)
 
     def __repr__(self):
         return f"{self.description}"
+
+    def clear(self):
+        self.id = None
+        self.description = None
+        self.done = None
+        self.creation_date = None
+        self.completion_date = None
+        self.due_date = None
+        self.priority = None
+        # self.hidden = None
+        # self.contexts = None
+        # self.projects = None
+        return self
 
 
 class Context(Base):
@@ -41,11 +55,26 @@ class Context(Base):
     id = Column(Integer, primary_key=True)
     context = Column(String, nullable=False, unique=True)
 
+    def __repr__(self):
+        return f"{self.context}"
+
+    def clear(self):
+        self.id = None
+        self.context = None
+        return self
+
 
 class Project(Base):
     __tablename__ = 'Project'
     id = Column(Integer, primary_key=True)
     project = Column(String, nullable=False, unique=True)
 
+    def __repr__(self):
+        return f"{self.project}"
+
+    def clear(self):
+        self.id = None
+        self.project = None
+        return self
 
 Base.metadata.create_all(engine)
