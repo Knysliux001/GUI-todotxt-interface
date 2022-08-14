@@ -149,7 +149,7 @@ class FileParser():
         projects_re = re.compile(r'(?P<project>\+\S*)')
         results = projects_re.findall(line)
         if results:
-            logging.debug(f'Fount {results} projects in {line}')
+            logging.debug(f'Found {results} projects in {line}')
             return results
         else:
             return None
