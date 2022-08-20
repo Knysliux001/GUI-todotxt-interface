@@ -48,7 +48,7 @@ class FileParser():
                 for line in input_file.readlines():
                     line_number += 1
                     line = line.rstrip()  # to remove whitespaces at the end of lines
-                    self.parse_line(line, line_number)
+                    parsed_line = self.parse_line(line, line_number)
                 return line_number
 
         except FileNotFoundError:
@@ -58,25 +58,28 @@ class FileParser():
 
     def parse_line(self, line, line_number=0):
         logging.debug(f'Parsing {line_number=}')
+        parsed_line = {}
         if len(line.strip()) == 0:
             logging.warning(f'Empty line skipped on {self.file_name}:{line_number}')
             pass  # ignore empty lines
         else:
-            description = line
-            done = self.find_done(line)
-            logging.debug(f'{done=} {description=}')
-            if done:
-                creation_date, completion_date = self.find_done_dates(line)
-                logging.debug(f'{creation_date=} {completion_date=} {description=}')
+            parsed_line["description"] = line
+            parsed_line["done"] = self.find_done(line)
+            logging.debug(f'{parsed_line["done"]=} {parsed_line["description"]}')
+            if parsed_line["done"]:
+                parsed_line["creation_date"], parsed_line["completion_date"] = self.find_done_dates(line)
+                logging.debug(f'{parsed_line["creation_date"]=} {parsed_line["completion_date"]=} {parsed_line["description"]}')
             else:
-                priority = self.find_priority(line)
-                if priority:
-                    self.find_priority_creation_date(line)
+                parsed_line["priority"] = self.find_priority(line)
+                if parsed_line["priority"]:
+                    parsed_line["creation_date"] = self.find_priority_creation_date(line)
                 else:
-                    self.find_creation_date(line)
-            self.find_contexts(line)
-            self.find_projects(line)
-            self.find_due_date(line)
+                    parsed_line["creation_date"] = self.find_creation_date(line)
+            parsed_line["contexts"] = self.find_contexts(line)
+            parsed_line["projects"] = self.find_projects(line)
+            parsed_line["due_date"] = self.find_due_date(line)
+        logging.debug(f'{parsed_line=}')
+        return parsed_line
 
     def create_task(self, description, done):
         task = Task(description=description, done=done)
