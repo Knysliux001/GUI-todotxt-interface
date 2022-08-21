@@ -29,7 +29,6 @@ class Task(Base):
     completion_date = Column("Completion date", Date, nullable=True, default=None)
     due_date = Column("Due date", Date, nullable=True, default=None)
     priority = Column("Priority", String(1), nullable=True, default=None)
-    # hidden = Column("Hidden", Boolean, nullable=False, default=None)
     contexts = relationship("Context", secondary=task_context)
     projects = relationship("Project", secondary=task_project)
 
@@ -44,9 +43,6 @@ class Task(Base):
         self.completion_date = None
         self.due_date = None
         self.priority = None
-        # self.hidden = None
-        # self.contexts = None
-        # self.projects = None
         return self
 
 

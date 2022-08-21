@@ -20,7 +20,7 @@ class FileModHandler(FileSystemEventHandler):
     def on_modified(self, event):
         # to filter directory events and other file events
         if not event.is_directory and event.src_path.endswith(self.file_name):
-            self.observer.stop() # stop watching
+            # self.observer.stop() # stop watching
             self.callback() # call callback
 
 

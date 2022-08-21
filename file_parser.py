@@ -53,7 +53,7 @@ class FileParser():
 
         except FileNotFoundError:
             logging.error(f'File {self.file_name} was not found!')
-            return 0
+            return 1
 
 
     def parse_line(self, line, line_number=0):
@@ -67,9 +67,11 @@ class FileParser():
             parsed_line["done"] = self.find_done(line)
             logging.debug(f'{parsed_line["done"]=} {parsed_line["description"]}')
             if parsed_line["done"]:
+                parsed_line["priority"] = None
                 parsed_line["creation_date"], parsed_line["completion_date"] = self.find_done_dates(line)
                 logging.debug(f'{parsed_line["creation_date"]=} {parsed_line["completion_date"]=} {parsed_line["description"]}')
             else:
+                parsed_line["completion_date"] = None
                 parsed_line["priority"] = self.find_priority(line)
                 if parsed_line["priority"]:
                     parsed_line["creation_date"] = self.find_priority_creation_date(line)
@@ -80,11 +82,6 @@ class FileParser():
             parsed_line["due_date"] = self.find_due_date(line)
         logging.debug(f'{parsed_line=}')
         return parsed_line
-
-    def create_task(self, description, done):
-        task = Task(description=description, done=done)
-        session.add(task)
-        session.commit()
 
     def find_done(self, line):
         done_re = re.compile(r'^x ')
@@ -169,8 +166,10 @@ class FileParser():
 
 
 # testing lines:
-parser = FileParser("test.txt")
-parser.read_input_file()
+if __name__ == "__main__":
+    parser = FileParser("test.txt")
+    lines_parsed = parser.read_input_file()
+    logging.debug(f'{lines_parsed=}')
 
 
-session.close()
+    # session.close()
