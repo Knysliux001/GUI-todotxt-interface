@@ -17,10 +17,10 @@ no priority, creation_date?
 
 __anywhere__
 contexts?
-'(?P<context>@\S*)'
+'(?P<context>@\S+)'
 
 projects?
-'(?P<project>\+\S*)'
+'(?P<project>\+\S+)'
 
 due date?
 'due:(?P<due_date>\d{4}-\d{2}-\d{2})'
@@ -30,26 +30,34 @@ import logging
 import sys
 from sqlalchemy.orm import sessionmaker
 from db_initializer import *
+from db_interface import *
 # from datetime import date
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 Session = sessionmaker(bind=engine)
 session = Session()
+db_interface = DBInterface(session)
 
 class FileParser():
     def __init__(self, file_name="todo.txt"):
         self.file_name = file_name
 
-    def read_input_file(self):
+    def digest_input_file(self):
         try:
             with open(self.file_name, 'r') as input_file:
                 line_number = 0
                 for line in input_file.readlines():
                     line_number += 1
                     line = line.rstrip()  # to remove whitespaces at the end of lines
+                    if len(line) == 0:
+                        logging.warning(f'Empty line skipped on {self.file_name}:{line_number}')
+                        continue
                     parsed_line = self.parse_line(line, line_number)
-                return line_number
+                    status = db_interface.add_task(parsed_line)
+                    if status != 0:
+                        logging.debug(f'Failed to add {self.file_name}:{line_number} error status: {status}')
+                return 0
 
         except FileNotFoundError:
             logging.error(f'File {self.file_name} was not found!')
@@ -80,7 +88,7 @@ class FileParser():
             parsed_line["contexts"] = self.find_contexts(line)
             parsed_line["projects"] = self.find_projects(line)
             parsed_line["due_date"] = self.find_due_date(line)
-        logging.debug(f'{parsed_line=}')
+            logging.debug(f'{parsed_line=}')
         return parsed_line
 
     def find_done(self, line):
@@ -137,7 +145,7 @@ class FileParser():
             return None
 
     def find_contexts(self, line):
-        contexts_re = re.compile(r'(?P<context>@\S*)')
+        contexts_re = re.compile(r'(?P<context>@\S+)')
         results = contexts_re.findall(line)
         if results:
             logging.debug(f'Found {results} contexts in {line}')
@@ -146,7 +154,7 @@ class FileParser():
             return None
 
     def find_projects(self, line):
-        projects_re = re.compile(r'(?P<project>\+\S*)')
+        projects_re = re.compile(r'(?P<project>\+\S+)')
         results = projects_re.findall(line)
         if results:
             logging.debug(f'Found {results} projects in {line}')
@@ -168,8 +176,9 @@ class FileParser():
 # testing lines:
 if __name__ == "__main__":
     parser = FileParser("test.txt")
-    lines_parsed = parser.read_input_file()
-    logging.debug(f'{lines_parsed=}')
+    status = parser.digest_input_file()
+    logging.debug(f'{status=}')
+
 
 
     # session.close()
