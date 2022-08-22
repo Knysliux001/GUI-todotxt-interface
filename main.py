@@ -64,6 +64,22 @@ def save():
     time.sleep(1)
     status_label["text"] = "Idle"
 
+def on_context_select(event):
+    selection = event.widget.curselection()
+    if selection:
+        index = selection[0]
+        context_selected = event.widget.get(index)
+        project_selected = project_listbox.get(ANCHOR)
+        logging.debug(f'{context_selected=} {project_selected=}')
+
+def on_project_select(event):
+    selection = event.widget.curselection()
+    if selection:
+        index = selection[0]
+        project_selected = event.widget.get(index)
+        context_selected = context_listbox.get(ANCHOR)
+        logging.debug(f'{project_selected=} {context_selected=}')
+
 
 load_button = Button(top_frame, text="Load", command=loading)
 load_button.pack(side=LEFT)
@@ -72,9 +88,11 @@ save_button.pack(side=LEFT)
 
 context_listbox = Listbox(filters_frame)
 context_listbox.pack(side=TOP, fill=BOTH, expand=True)
+context_listbox.bind("<<ListboxSelect>>", on_context_select)
 
 project_listbox = Listbox(filters_frame)
 project_listbox.pack(side=BOTTOM, fill=BOTH, expand=True)
+project_listbox.bind("<<ListboxSelect>>", on_project_select)
 
 task_scroll = Scrollbar(tasks_frame, orient=VERTICAL)
 
