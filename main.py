@@ -50,6 +50,9 @@ def load():
     project_listbox.insert(END, "")
     for project_obj in session.query(Project).order_by(Project.project).all():
         project_listbox.insert(END, project_obj)
+    task_listbox.delete(0, END)
+    for task_obj in session.query(Task).order_by(Task.done.asc(),Task.priority.desc(),Task.due_date.desc()).all():
+        task_listbox.insert(END, task_obj)
     status_label["text"] = "Idle"
 
 
@@ -63,6 +66,12 @@ def save():
     status_label["text"] = "thread2 is saving..."
     time.sleep(1)
     status_label["text"] = "Idle"
+
+def new_task():
+    pass
+
+def done_task():
+    pass
 
 def on_context_select(event):
     selection = event.widget.curselection()
@@ -86,6 +95,11 @@ load_button.pack(side=LEFT)
 save_button = Button(top_frame, text="Save", command=saving)
 save_button.pack(side=LEFT)
 
+done_button = Button(top_frame, text="Done", command=done_task)
+done_button.pack(side=RIGHT)
+new_button = Button(top_frame, text="New", command=new_task)
+new_button.pack(side=RIGHT)
+
 context_listbox = Listbox(filters_frame)
 context_listbox.pack(side=TOP, fill=BOTH, expand=True)
 context_listbox.bind("<<ListboxSelect>>", on_context_select)
@@ -99,7 +113,6 @@ task_scroll = Scrollbar(tasks_frame, orient=VERTICAL)
 task_listbox = Listbox(tasks_frame, height=20, width=70, yscrollcommand=task_scroll.set)
 task_scroll.config(command=task_listbox.yview)
 task_scroll.pack(side=RIGHT, fill=Y)
-task_listbox.insert(END, "some_task from @test_context in +test_project")
 task_listbox.pack(fill=BOTH, expand=True)
 
 status_label = Label(status_frame, text="Idle", bd=1, relief=SUNKEN, anchor=W)
