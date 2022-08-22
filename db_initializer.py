@@ -2,7 +2,7 @@ from sqlalchemy import Table, ForeignKey, Column, Boolean, Integer, String, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-engine = create_engine('sqlite:///internaltest.db',
+engine = create_engine('sqlite://',
 connect_args={'check_same_thread': False}
 )
 Base = declarative_base()
