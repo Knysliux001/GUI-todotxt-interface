@@ -75,8 +75,16 @@ def save():
 def new_task():
     def add(event=None):
         task_str = entry.get()
-        print(task_str)
+        task_str = task_str.rstrip()
+        if len(task_str) == 0:
+            logging.error(f'Empty task, cannot add.')
+            status_label["text"] = "Cannot add empty task"
+            return
+        task_listbox.insert(END, task_str)
+        with open(TODO_FILE, "a") as append_file:
+            append_file.write(f'\n{task_str}')
         newWindow.destroy()
+        loading()
 
     newWindow = Toplevel(root)
     newWindow.title("Add task")
