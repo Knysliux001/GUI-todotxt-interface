@@ -45,6 +45,7 @@ def load():
     status_label["text"] = "loading..."
     context_listbox.delete(0, END)
     context_listbox.insert(END, "")
+    context_listbox.insert(END, "-")
     for context_obj in session.query(Context).order_by(Context.context).all():
         context_listbox.insert(END, context_obj)
     project_listbox.delete(0, END)
@@ -80,6 +81,13 @@ def on_context_select(event):
         index = selection[0]
         context_sel = event.widget.get(index)
         logging.debug(f'{context_sel=}')
+        if context_sel == "-":
+            task_listbox.delete(0, END)
+            for task_obj in session.query(Task).filter(~Task.contexts.any()).order_by(Task.done.asc(), Task.priority.desc(),
+                                                         Task.due_date.desc()).all():
+                task_listbox.insert(END, task_obj)
+            status_label["text"] = "Filtering..."
+            return
         if not context_sel:
             task_listbox.delete(0, END)
             for task_obj in session.query(Task).order_by(Task.done.asc(), Task.priority.desc(),
