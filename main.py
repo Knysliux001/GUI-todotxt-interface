@@ -9,7 +9,7 @@ import sys
 from db_initializer import *
 from db_interface import *
 from file_parser import FileParser
-from sqlalchemy import and_
+import re
 
 
 # logging.basicConfig(filename='guiapp.log', level=logging.DEBUG)
@@ -101,7 +101,22 @@ def new_task():
     add_button.pack(side=RIGHT)
 
 def done_task():
-    pass
+    done_sel = task_listbox.get(ANCHOR)
+    logging.debug(done_sel)
+    if done_sel.startswith('x '):
+        logging.warning(f'The task {done_sel} is already done!')
+        status_label["text"] = "Already done!"
+        return
+    else:
+        done_task_obj = session.query(Task).filter(Task.description == done_sel).first()
+        done_task_obj.done = True
+        if done_task_obj.priority:
+            done_task_obj.priority = None
+        if done_task_obj.creation_date:
+            done_task_obj.completion_date = datetime.now().strftime("%Y-%m-%d")
+        logging.debug(f'{vars(done_task_obj)}')
+        # delete and save here
+
 
 def on_context_select(event):
     selection = event.widget.curselection()
