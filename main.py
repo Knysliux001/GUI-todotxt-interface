@@ -13,12 +13,13 @@ from datetime import date
 
 
 # logging.basicConfig(filename='guiapp.log', level=logging.DEBUG)
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 Base.metadata.drop_all(bind=engine, checkfirst=True)
 Base.metadata.create_all(engine)
 
 TODO_FILE = "todo.txt"
 
+block = 0
 
 root = Tk()
 # window geometry definitions
@@ -72,7 +73,7 @@ def new_task():
         with open(TODO_FILE, "a") as append_file:
             append_file.write(f'\n{task_str}')
         newWindow.destroy()
-        loading()
+        load()
 
     newWindow = Toplevel(root)
     newWindow.title("Add task")

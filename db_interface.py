@@ -5,7 +5,7 @@ import logging
 import sys
 from sqlalchemy.orm import sessionmaker
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
 Session = sessionmaker(bind=engine)
 session = Session()

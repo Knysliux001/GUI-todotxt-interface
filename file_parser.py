@@ -33,7 +33,7 @@ from db_initializer import *
 from db_interface import *
 from datetime import date
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
 Session = sessionmaker(bind=engine)
 session = Session()
