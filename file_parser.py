@@ -175,7 +175,7 @@ class FileParser():
 
 # testing lines:
 if __name__ == "__main__":
-    parser = FileParser("test.txt")
+    parser = FileParser("todo.txt")
     status = parser.digest_input_file()
     logging.debug(f'{status=}')
 

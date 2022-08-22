@@ -7,9 +7,9 @@ import time
 import logging
 import sys
 from db_initializer import *
-from db_interface import *
+from db_interface import DBInterface
 from file_parser import FileParser
-import re
+from datetime import date
 
 
 # logging.basicConfig(filename='guiapp.log', level=logging.DEBUG)
@@ -90,6 +90,10 @@ def new_task():
 def done_task():
     done_sel = task_listbox.get(ANCHOR)
     logging.debug(done_sel)
+    if not done_sel:
+        logging.warning(f'Nothing has been selected!')
+        status_label["text"] = "No selection!"
+        return
     if done_sel.startswith('x '):
         logging.warning(f'The task {done_sel} is already done!')
         status_label["text"] = "Already done!"
@@ -97,13 +101,25 @@ def done_task():
     else:
         done_task_obj = session.query(Task).filter(Task.description == done_sel).first()
         done_task_obj.done = True
+        done_task_obj.description = 'x ' + done_task_obj.description
         if done_task_obj.priority:
             done_task_obj.priority = None
         if done_task_obj.creation_date:
-            done_task_obj.completion_date = datetime.now().strftime("%Y-%m-%d")
+            done_task_obj.completion_date = date.today()
         logging.debug(f'{vars(done_task_obj)}')
-        # delete and save here
-
+        session.commit()
+        # # delete and save here
+        with open(TODO_FILE, "r+") as edit_file:
+            data = edit_file.readlines()
+            edit_file.seek(0)
+            for line in data:
+                if line.rstrip() != done_sel:
+                    edit_file.write(line)
+                else:
+                    logging.debug(f'{done_sel} removed')
+            edit_file.truncate()
+        with open(TODO_FILE, "a") as append_file:
+            append_file.write(f'\n{done_task_obj.description}')
 
 def on_context_select(event):
     selection = event.widget.curselection()
