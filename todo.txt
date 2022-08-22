@@ -1,0 +1,11 @@
+(A) Check email for additional details about +bigproject @work due:2018-12-12
+(B) 2017-01-22 Some important task with a date
+Task with no details
+2018-11-15 To read due:2022-02-02 Python for kitchen @read
+2018-11-16 @someday +travel Visit Iceland
+2018-11-17 Some +bigproject due:2018-12-12
+2018-11-18 @agenda meeting about +bigproject
+2018-11-19 @www find the best +bike computer
+x 2018-05-09 2018-05-08 Very done task
+x clean +bike @home
+x 2018-05-09 2018-03-22 @home wash the dishes
