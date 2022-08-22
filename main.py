@@ -19,8 +19,6 @@ Base.metadata.create_all(engine)
 
 TODO_FILE = "todo.txt"
 
-block = 0
-
 root = Tk()
 # window geometry definitions
 root.title('todo.txt interpreter')
