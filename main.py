@@ -7,7 +7,7 @@ import time
 import logging
 import sys
 from db_initializer import *
-from db_interface import DBInterface
+from db_interface import DBInterface, session
 from file_parser import FileParser
 from datetime import date
 
