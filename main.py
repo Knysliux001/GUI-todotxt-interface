@@ -1,6 +1,7 @@
 # Main app window
 import contextvars
 from tkinter import *
+import tkinter.simpledialog, tkinter.filedialog
 from threading import *
 import time
 import logging
@@ -69,8 +70,27 @@ def save():
     time.sleep(1)
     status_label["text"] = "Idle"
 
+
+
 def new_task():
-    pass
+    def add(event=None):
+        task_str = entry.get()
+        print(task_str)
+        newWindow.destroy()
+
+    newWindow = Toplevel(root)
+    newWindow.title("Add task")
+    entry = Entry(newWindow, width=100)
+    entry.pack(side=LEFT, fill=X)
+    entry.focus()
+
+    task_str = ""
+    newWindow.bind("<Escape>", lambda x: newWindow.destroy())
+    newWindow.bind("<Return>", add)
+    cancel_button = Button(newWindow, text="Cancel", command=newWindow.destroy)
+    cancel_button.pack(side=RIGHT)
+    add_button = Button(newWindow, text="Add", textvariable=task_str, command=add)
+    add_button.pack(side=RIGHT)
 
 def done_task():
     pass
@@ -144,7 +164,7 @@ project_listbox.bind("<<ListboxSelect>>", on_project_select)
 
 task_scroll = Scrollbar(tasks_frame, orient=VERTICAL)
 
-task_listbox = Listbox(tasks_frame, height=20, width=70, yscrollcommand=task_scroll.set)
+task_listbox = Listbox(tasks_frame, height=20, width=100, yscrollcommand=task_scroll.set)
 task_scroll.config(command=task_listbox.yview)
 task_scroll.pack(side=RIGHT, fill=Y)
 task_listbox.pack(fill=BOTH, expand=True)
