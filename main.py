@@ -19,6 +19,7 @@ Base.metadata.create_all(engine)
 
 TODO_FILE = "todo.txt"
 
+
 root = Tk()
 # window geometry definitions
 root.title('todo.txt interpreter')
@@ -37,7 +38,7 @@ def load():
     logging.debug("thread1 loading")
     status_label["text"] = "parsing the file..."
     parser = FileParser(TODO_FILE)
-    Base.metadata.drop_all(bind=engine, checkfirst=True)
+    # Base.metadata.drop_all(bind=engine, checkfirst=True)
     Base.metadata.create_all(engine)
     status = parser.digest_input_file()
     if status != 0:
@@ -119,7 +120,8 @@ def done_task():
                     logging.debug(f'{done_sel} removed')
             edit_file.truncate()
         with open(TODO_FILE, "a") as append_file:
-            append_file.write(f'\n{done_task_obj.description}')
+            append_file.write(f'\nx {done_sel}')
+        load()
 
 def on_context_select(event):
     selection = event.widget.curselection()
