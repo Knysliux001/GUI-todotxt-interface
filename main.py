@@ -8,7 +8,7 @@ import sys
 from db_initializer import *
 from db_interface import *
 from file_parser import FileParser
-
+from sqlalchemy import and_
 
 
 # logging.basicConfig(filename='guiapp.log', level=logging.DEBUG)
@@ -77,17 +77,41 @@ def on_context_select(event):
     selection = event.widget.curselection()
     if selection:
         index = selection[0]
-        context_selected = event.widget.get(index)
-        project_selected = project_listbox.get(ANCHOR)
-        logging.debug(f'{context_selected=} {project_selected=}')
+        context_sel = event.widget.get(index)
+        logging.debug(f'{context_sel=}')
+        if not context_sel:
+            task_listbox.delete(0, END)
+            for task_obj in session.query(Task).order_by(Task.done.asc(), Task.priority.desc(),
+                                                         Task.due_date.desc()).all():
+                task_listbox.insert(END, task_obj)
+            status_label["text"] = "Idle"
+        else:
+            task_listbox.delete(0, END)
+            for task_obj in session.query(Task).filter(Task.contexts.any(Context.context == context_sel)).order_by(Task.done.asc(), Task.priority.desc(),
+                                                         Task.due_date.desc()).all():
+                task_listbox.insert(END, task_obj)
+            status_label["text"] = "Filtering..."
+
 
 def on_project_select(event):
     selection = event.widget.curselection()
     if selection:
         index = selection[0]
-        project_selected = event.widget.get(index)
-        context_selected = context_listbox.get(ANCHOR)
-        logging.debug(f'{project_selected=} {context_selected=}')
+        project_sel = event.widget.get(index)
+        logging.debug(f'{project_sel=}')
+        if not project_sel:
+            task_listbox.delete(0, END)
+            for task_obj in session.query(Task).order_by(Task.done.asc(), Task.priority.desc(),
+                                                         Task.due_date.desc()).all():
+                task_listbox.insert(END, task_obj)
+            status_label["text"] = "Idle"
+        else:
+            task_listbox.delete(0, END)
+            for task_obj in session.query(Task).filter(Task.projects.any(Project.project == project_sel)).order_by(Task.done.asc(), Task.priority.desc(),
+                                                         Task.due_date.desc()).all():
+                task_listbox.insert(END, task_obj)
+            status_label["text"] = "Filtering..."
+
 
 
 load_button = Button(top_frame, text="Load", command=loading)
