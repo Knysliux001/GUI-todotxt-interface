@@ -6,6 +6,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 
+
 class FileModHandler(FileSystemEventHandler):
 
     def __init__(self, path, file_name, callback):
@@ -25,9 +26,9 @@ class FileModHandler(FileSystemEventHandler):
 
 
 if __name__ == '__main__':
-
-    def callback():
+    TODO_FILE = "todo.txt"
+    def file_changed():
         print("todo.txt was changed")
         # trigger DB reload
 
-    FileModHandler('.', 'todo.txt', callback)
+    FileModHandler('.', TODO_FILE, file_changed)

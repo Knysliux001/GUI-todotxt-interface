@@ -16,6 +16,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 Base.metadata.drop_all(bind=engine, checkfirst=True)
 Base.metadata.create_all(engine)
 
+TODO_FILE = "todo.txt"
 
 root = Tk()
 # window geometry definitions
@@ -34,7 +35,7 @@ def loading():
 def load():
     logging.debug("thread1 loading")
     status_label["text"] = "parsing the file..."
-    parser = FileParser("test.txt")
+    parser = FileParser(TODO_FILE)
     Base.metadata.drop_all(bind=engine, checkfirst=True)
     Base.metadata.create_all(engine)
     status = parser.digest_input_file()
@@ -87,8 +88,9 @@ def on_context_select(event):
             status_label["text"] = "Idle"
         else:
             task_listbox.delete(0, END)
-            for task_obj in session.query(Task).filter(Task.contexts.any(Context.context == context_sel)).order_by(Task.done.asc(), Task.priority.desc(),
-                                                         Task.due_date.desc()).all():
+            for task_obj in session.query(Task).filter(Task.contexts.any(Context.context == context_sel)).order_by(
+                    Task.done.asc(), Task.priority.desc(),
+                    Task.due_date.desc()).all():
                 task_listbox.insert(END, task_obj)
             status_label["text"] = "Filtering..."
 
@@ -107,11 +109,11 @@ def on_project_select(event):
             status_label["text"] = "Idle"
         else:
             task_listbox.delete(0, END)
-            for task_obj in session.query(Task).filter(Task.projects.any(Project.project == project_sel)).order_by(Task.done.asc(), Task.priority.desc(),
-                                                         Task.due_date.desc()).all():
+            for task_obj in session.query(Task).filter(Task.projects.any(Project.project == project_sel)).order_by(
+                    Task.done.asc(), Task.priority.desc(),
+                    Task.due_date.desc()).all():
                 task_listbox.insert(END, task_obj)
             status_label["text"] = "Filtering..."
-
 
 
 load_button = Button(top_frame, text="Load", command=loading)
@@ -149,4 +151,3 @@ tasks_frame.pack(side=RIGHT, fill=BOTH, expand=True)
 
 root.after(0, loading)
 root.mainloop()
-
