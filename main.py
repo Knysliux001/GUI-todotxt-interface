@@ -76,7 +76,11 @@ context_listbox.pack(side=TOP, fill=BOTH, expand=True)
 project_listbox = Listbox(filters_frame)
 project_listbox.pack(side=BOTTOM, fill=BOTH, expand=True)
 
-task_listbox = Listbox(tasks_frame, height=20, width=70)
+task_scroll = Scrollbar(tasks_frame, orient=VERTICAL)
+
+task_listbox = Listbox(tasks_frame, height=20, width=70, yscrollcommand=task_scroll.set)
+task_scroll.config(command=task_listbox.yview)
+task_scroll.pack(side=RIGHT, fill=Y)
 task_listbox.insert(END, "some_task from @test_context in +test_project")
 task_listbox.pack(fill=BOTH, expand=True)
 
