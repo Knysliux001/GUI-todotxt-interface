@@ -59,19 +59,6 @@ def load():
     status_label["text"] = "Idle"
 
 
-def saving():
-    thread2 = Thread(target=save)
-    thread2.start()
-
-
-def save():
-    logging.debug("thread2 saving")
-    status_label["text"] = "thread2 is saving..."
-    time.sleep(1)
-    status_label["text"] = "Idle"
-
-
-
 def new_task():
     def add(event=None):
         task_str = entry.get()
@@ -169,8 +156,6 @@ def on_project_select(event):
 
 load_button = Button(top_frame, text="Load", command=loading)
 load_button.pack(side=LEFT)
-save_button = Button(top_frame, text="Save", command=saving)
-save_button.pack(side=LEFT)
 
 done_button = Button(top_frame, text="Done", command=done_task)
 done_button.pack(side=RIGHT)
