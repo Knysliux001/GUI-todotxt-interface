@@ -32,17 +32,7 @@ def loading():
     thread1 = Thread(target=load)
     thread1.start()
 
-
-def load():
-    logging.debug("thread1 loading")
-    status_label["text"] = "parsing the file..."
-    parser = FileParser(TODO_FILE)
-    # Base.metadata.drop_all(bind=engine, checkfirst=True)
-    Base.metadata.create_all(engine)
-    status = parser.digest_input_file()
-    if status != 0:
-        pass  # actions for filenotfound
-    status_label["text"] = "Finished parsing"
+def reload_filters():
     status_label["text"] = "loading..."
     context_listbox.delete(0, END)
     context_listbox.insert(END, "")
@@ -54,10 +44,21 @@ def load():
     for project_obj in session.query(Project).order_by(Project.project).all():
         project_listbox.insert(END, project_obj)
     task_listbox.delete(0, END)
-    for task_obj in session.query(Task).order_by(Task.done.asc(),Task.priority.desc(),Task.due_date.desc()).all():
+    for task_obj in session.query(Task).order_by(Task.done.asc(), Task.priority.desc(), Task.due_date.desc()).all():
         task_listbox.insert(END, task_obj)
     status_label["text"] = "Idle"
 
+def load():
+    logging.debug("thread1 loading")
+    status_label["text"] = "parsing the file..."
+    parser = FileParser(TODO_FILE)
+    # Base.metadata.drop_all(bind=engine, checkfirst=True)
+    Base.metadata.create_all(engine)
+    status = parser.digest_input_file()
+    if status != 0:
+        pass  # actions for filenotfound
+    status_label["text"] = "Finished parsing"
+    reload_filters()
 
 def new_task():
     def add(event=None):
@@ -72,6 +73,7 @@ def new_task():
             append_file.write(f'\n{task_str}')
         newWindow.destroy()
         load()
+        reload_filters()
 
     newWindow = Toplevel(root)
     newWindow.title("Add task")
