@@ -3,8 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 engine = create_engine('sqlite://',
-connect_args={'check_same_thread': False}
-)
+                       connect_args={'check_same_thread': False}
+                       )
 Base = declarative_base()
 
 task_context = Table(
@@ -30,6 +30,7 @@ class Task(Base):
     creation_date = Column("Creation date", Date, nullable=True, default=None)
     completion_date = Column("Completion date", Date, nullable=True, default=None)
     due_date = Column("Due date", Date, nullable=True, default=None)
+    cal_event_id = Column("Cal event id", String, nullable=True, unique=True)  # unique Google cal event id
     priority = Column("Priority", String(1), nullable=True, default=None)
     contexts = relationship("Context", secondary=task_context)
     projects = relationship("Project", secondary=task_project)
@@ -74,5 +75,6 @@ class Project(Base):
         self.id = None
         self.project = None
         return self
+
 
 Base.metadata.create_all(engine)
