@@ -39,6 +39,7 @@ Session = sessionmaker(bind=engine)
 session = Session()
 db_interface = DBInterface(session)
 
+
 class FileParser():
     def __init__(self, file_name="todo.txt"):
         self.file_name = file_name
@@ -63,7 +64,6 @@ class FileParser():
             logging.error(f'File {self.file_name} was not found!')
             return 1
 
-
     def parse_line(self, line, line_number=0):
         logging.debug(f'Parsing {line_number=}')
         parsed_line = {}
@@ -77,7 +77,8 @@ class FileParser():
             if parsed_line["done"]:
                 parsed_line["priority"] = None
                 parsed_line["creation_date"], parsed_line["completion_date"] = self.find_done_dates(line)
-                logging.debug(f'{parsed_line["creation_date"]=} {parsed_line["completion_date"]=} {parsed_line["description"]}')
+                logging.debug(
+                    f'{parsed_line["creation_date"]=} {parsed_line["completion_date"]=} {parsed_line["description"]}')
             else:
                 parsed_line["completion_date"] = None
                 parsed_line["priority"] = self.find_priority(line)
@@ -111,7 +112,6 @@ class FileParser():
             return creation_date, completion_date
         else:
             return None, None
-
 
     def find_priority(self, line):
         priority_re = re.compile(r'^\((?P<priority>[A-Z])\) ')
@@ -178,7 +178,5 @@ if __name__ == "__main__":
     parser = FileParser("todo.txt")
     status = parser.digest_input_file()
     logging.debug(f'{status=}')
-
-
 
     # session.close()

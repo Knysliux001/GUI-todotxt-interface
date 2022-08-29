@@ -11,7 +11,6 @@ from db_interface import DBInterface, session
 from file_parser import FileParser
 from datetime import date
 
-
 # logging.basicConfig(filename='guiapp.log', level=logging.DEBUG)
 logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 Base.metadata.drop_all(bind=engine, checkfirst=True)
@@ -21,7 +20,7 @@ TODO_FILE = "todo.txt"
 
 root = Tk()
 # window geometry definitions
-root.title('todo.txt interpreter')
+root.title(f'todo.txt interpreter – {TODO_FILE}')
 top_frame = Frame(root)
 filters_frame = Frame(root)
 tasks_frame = Frame(root)
@@ -46,15 +45,19 @@ def load():
     status_label["text"] = "loading..."
     context_listbox.delete(0, END)
     context_listbox.insert(END, "")
-    context_listbox.insert(END, "-")
+    context_listbox.insert(END, f'- [{session.query(Task).filter(~Task.contexts.any()).count()}]')
     for context_obj in session.query(Context).order_by(Context.context).all():
-        context_listbox.insert(END, context_obj)
+        context_count = session.query(Task).filter(Task.contexts.any(Context.context == context_obj.context)).count()
+        context_line = f'{str(context_obj)} [{context_count}]'
+        context_listbox.insert(END, context_line)
     project_listbox.delete(0, END)
     project_listbox.insert(END, "")
     for project_obj in session.query(Project).order_by(Project.project).all():
-        project_listbox.insert(END, project_obj)
+        project_count = session.query(Task).filter(Task.projects.any(Project.project == project_obj.project)).count()
+        project_line = f'{str(project_obj)} [{project_count}]'
+        project_listbox.insert(END, project_line)
     task_listbox.delete(0, END)
-    for task_obj in session.query(Task).order_by(Task.done.asc(),Task.priority.desc(),Task.due_date.desc()).all():
+    for task_obj in session.query(Task).order_by(Task.done.asc(), Task.priority.desc(), Task.due_date.desc()).all():
         task_listbox.insert(END, task_obj)
     status_label["text"] = "Idle"
 
@@ -86,6 +89,7 @@ def new_task():
     cancel_button.pack(side=RIGHT)
     add_button = Button(newWindow, text="Add", textvariable=task_str, command=add)
     add_button.pack(side=RIGHT)
+
 
 def done_task():
     done_sel = task_listbox.get(ANCHOR)
@@ -122,16 +126,21 @@ def done_task():
             append_file.write(f'\nx {done_sel}')
         load()
 
+
 def on_context_select(event):
     selection = event.widget.curselection()
     if selection:
         index = selection[0]
-        context_sel = event.widget.get(index)
+        if event.widget.get(index) != '':
+            context_sel = event.widget.get(index).split()[0]
+        else:
+            context_sel = ''
         logging.debug(f'{context_sel=}')
         if context_sel == "-":
             task_listbox.delete(0, END)
-            for task_obj in session.query(Task).filter(~Task.contexts.any()).order_by(Task.done.asc(), Task.priority.desc(),
-                                                         Task.due_date.desc()).all():
+            for task_obj in session.query(Task).filter(~Task.contexts.any()).order_by(Task.done.asc(),
+                                                                                      Task.priority.desc(),
+                                                                                      Task.due_date.desc()).all():
                 task_listbox.insert(END, task_obj)
             status_label["text"] = "Filtering..."
             return
@@ -154,7 +163,10 @@ def on_project_select(event):
     selection = event.widget.curselection()
     if selection:
         index = selection[0]
-        project_sel = event.widget.get(index)
+        if event.widget.get(index) != '':
+            project_sel = event.widget.get(index).split()[0]
+        else:
+            project_sel = ''
         logging.debug(f'{project_sel=}')
         if not project_sel:
             task_listbox.delete(0, END)
